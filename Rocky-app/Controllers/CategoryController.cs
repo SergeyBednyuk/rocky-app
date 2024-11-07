@@ -34,8 +34,15 @@ public class CategoryController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Category category)
     {
-        _db.Categories.Add(category);
-        await _db.SaveChangesAsync();
-        return RedirectToAction("Index");
+        if (ModelState.IsValid)
+        {
+            _db.Categories.Add(category);
+            await _db.SaveChangesAsync();
+            return RedirectToAction("Index");   
+        }
+        else
+        {
+            return View(category);
+        }
     }
 }
