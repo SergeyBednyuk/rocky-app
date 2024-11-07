@@ -45,4 +45,49 @@ public class CategoryController : Controller
             return View(category);
         }
     }
+    
+    //GET - Edit
+    public async Task<IActionResult> Edit(int? id)
+    {
+        if (id != null)
+        {
+            var category = await _db.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            return View(category);
+        }
+        return NotFound();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Edit(Category category)
+    {
+        var categoryToEdit = await _db.Categories.FirstOrDefaultAsync(x => x.Id == category.Id);
+        if (categoryToEdit != null)
+        {
+            _db.Entry(categoryToEdit).CurrentValues.SetValues(category);
+            await _db.SaveChangesAsync();
+        }
+        return RedirectToAction("Index");
+    }
+
+    public async Task<IActionResult> Delete(int? id)
+    {
+        if (id != null)
+        {
+            var category = await _db.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            return View(category);
+        }
+        return NotFound();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var category = await _db.Categories.FirstOrDefaultAsync(x => x.Id == id);
+        if (category != null)
+        {
+            _db.Categories.Remove(category);
+            await _db.SaveChangesAsync();
+        }
+        return RedirectToAction("Index");
+    }
 }
