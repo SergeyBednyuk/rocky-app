@@ -32,7 +32,12 @@
             <tr>
                 <td style="width: 50%">@item.ApplicationTypeName</td>
                 <td style="width: 30%">@item.DisplayOrder</td>
-                <td>+</td>
+                <td>
+                    <a asp-controller="ApplicationType" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary mx-2">Edit</a>
+                </td>
+                <td>
+                    <a asp-controller="ApplicationType" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger mx-2">Delete</a>
+                </td>
             </tr>
 
             }

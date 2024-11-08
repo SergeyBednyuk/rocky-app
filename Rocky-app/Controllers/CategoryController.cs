@@ -52,6 +52,10 @@ public class CategoryController : Controller
         if (id != null)
         {
             var category = await _db.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            if (category == null)
+            {
+                return NotFound();
+            }
             return View(category);
         }
         return NotFound();
