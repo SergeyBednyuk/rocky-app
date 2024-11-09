@@ -4,16 +4,19 @@ using Microsoft.EntityFrameworkCore;
 using Rocky_app.Data;
 using Rocky_app.Models;
 using Rocky_app.Models.ViewModels;
+using Rocky_app.Utils;
 
 namespace Rocky_app.Controllers;
 
 public class ProductController : Controller
 {
     private readonly AppDbContext _db;
-
-    public ProductController(AppDbContext db)
+    private readonly IWebHostEnvironment _env;
+    
+    public ProductController(AppDbContext db, IWebHostEnvironment env)
     {
         _db = db;
+        _env = env;
     }
     
     // GET
@@ -46,7 +49,7 @@ public class ProductController : Controller
         var productViewModel = new ProductViewModel()
         {
             CategorySelectList = _db.Categories
-                                    .AsNoTracking()
+                                    /*.AsNoTracking()*/
                                     .Select(x => new SelectListItem
                                     {
                                         Text = x.CategoryName, Value = x.Id.ToString()
@@ -61,6 +64,40 @@ public class ProductController : Controller
                 return NotFound();
             }
         }
+        return View(productViewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Upsert(ProductViewModel productViewModel)
+    {
+        if (productViewModel.Product.Id == 0)
+        {
+            var files = HttpContext.Request.Form.Files;
+            string fileFilderPath = _env.WebRootPath;
+
+            if (productViewModel.Product.Id == 0)
+            {
+                string uploadPath = fileFilderPath + WC.ImagePath;
+                string fileName = Guid.NewGuid().ToString();
+                string extension = Path.GetExtension(files[0].FileName);
+
+                using (var fileStream = new FileStream(Path.Combine(uploadPath, fileName + extension), FileMode.Create))
+                {
+                    files[0].CopyTo(fileStream);
+                }
+                
+                productViewModel.Product.ImageUrl = fileName + extension;
+                _db.Products.Add(productViewModel.Product);
+                await _db.SaveChangesAsync();
+            }
+            else
+            {
+                //Updating
+            }
+            return RedirectToAction("Index");    
+        }
+
         return View(productViewModel);
     }
 }
