@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Rocky_app.Data;
 using Rocky_app.Models;
+using Rocky_app.Models.ViewModels;
 
 namespace Rocky_app.Controllers;
 
@@ -32,7 +33,7 @@ public class ProductController : Controller
 
     public async Task<IActionResult> Upsert(int? id)
     {
-        IEnumerable<SelectListItem> categories = _db.Categories
+        /*IEnumerable<SelectListItem> categories = _db.Categories
                                                     .AsNoTracking()
                                                     .Select(x => new SelectListItem
                                                     {
@@ -40,20 +41,26 @@ public class ProductController : Controller
                                                         Value = x.Id.ToString()
                                                     });
         
-        ViewBag.CategoryDropDown = categories;
+        ViewBag.CategoryDropDown = categories;*/
+
+        var productViewModel = new ProductViewModel()
+        {
+            CategorySelectList = _db.Categories
+                                    .AsNoTracking()
+                                    .Select(x => new SelectListItem
+                                    {
+                                        Text = x.CategoryName, Value = x.Id.ToString()
+                                    })
+        };
         
-        if (id == null)
+        if (id != null)
         {
-            return View(new Product());
-        }
-        else
-        {
-            var productToEdit = await _db.Products.FindAsync(id);
-            if (productToEdit == null)
+            productViewModel.Product = await _db.Products.FindAsync(id); 
+            if (productViewModel.Product == null)
             {
                 return NotFound();
             }
-            return View(productToEdit);   
         }
+        return View(productViewModel);
     }
 }

@@ -1,4 +1,4 @@
-@model Rocky_app.Models.Product
+@model Rocky_app.Models.ViewModels.ProductViewModel
 
 @{
     var title = "Create Product";
@@ -6,10 +6,10 @@
 }
 
 <form method="post" asp-action="Upsert" enctype="multipart/form-data">
-    @if (Model.Id != 0)
+    @if (Model.Product.Id != 0)
     {
         title = "Edit Product";
-        <input type="hidden" asp-for="Id"/>
+        <input type="hidden" asp-for="Product.Id"/>
     }
     <div class="border p-3">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -20,30 +20,30 @@
             <div class="col-8 ">
                 <div class="form-group row p-3">
                     <div class="col-4">
-                        <label asp-for="Name"></label>
+                        <label asp-for="Product.Name"></label>
                     </div>
                     <div class="col-8">
-                        <input asp-for="Name" class="form-control" type="text" value="@Model.Name"/>
-                        <span asp-validation-for="Name" class="text-danger"></span>
+                        <input asp-for="Product.Name" class="form-control" type="text" value="@Model.Product.Name"/>
+                        <span asp-validation-for="Product.Name" class="text-danger"></span>
                     </div>
 
                 </div>
                 <div class="form-group row p-3">
                     <div class="col-4">
-                        <label asp-for="Price"></label>
+                        <label asp-for="Product.Price"></label>
                     </div>
                     <div class="col-8">
-                        <input asp-for="Price" class="form-control" value="@Model.Price"/>
-                        <span asp-validation-for="Price" class="text-danger"></span>
+                        <input asp-for="Product.Price" class="form-control" value="@Model.Product.Price"/>
+                        <span asp-validation-for="Product.Price" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="form-group row p-3">
                     <div class="col-4">
-                        <label asp-for="Description"></label>
+                        <label asp-for="Product.Description"></label>
                     </div>
                     <div class="col-8">
-                        <input asp-for="Description" class="form-control" value="@Model.Description"/>
-                        <span asp-validation-for="Description" class="text-danger"></span>
+                        <textarea asp-for="Product.Description" class="form-control summernote" value="@Model.Product.Description"></textarea>
+                        <span asp-validation-for="Product.Description" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="form-group row p-3">
@@ -56,20 +56,20 @@
                 </div>
                 <div class="form-group row p-3">
                     <div class="col-4">
-                        <label asp-for="CategoryId"></label>
+                        <label asp-for="Product.CategoryId"></label>
                     </div>
                     <div class="col-8">
-                        <select asp-for="CategoryId" asp-items="@ViewBag.CategoryDropDown" class="form-control">
+                        <select asp-for="Product.CategoryId" asp-items="@Model.CategorySelectList" class="form-control">
                             <option selected disabled>--Select Category--</option>
                         </select>
-                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-8 offset-4 row">
 
                         <div class="col">
-                            @if (Model.Id != 0)
+                            @if (Model.Product.Id != 0)
                             {
                                 <input type="submit" class="btn btn-info w-100" value="Edit"/>   
                             }
@@ -90,3 +90,30 @@
         </div>
     </div>
 </form>
+
+@section Scripts
+{
+    @{
+        <partial name="_ValidationScriptsPartial"/>
+    }
+    <script>
+        $(document).ready(function() {
+            $('.summernote').summernote({
+                height: 250
+            });
+        });
+        function validateInput() {
+            if(document.getElementById("uploadBox").value == "") {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Please upload an image!",
+                    icon: "error"
+                });
+                return false;
+            }
+            return true;
+        }
+    
+    </script>
+
+}
