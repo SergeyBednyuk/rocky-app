@@ -71,33 +71,54 @@ public class ProductController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Upsert(ProductViewModel productViewModel)
     {
+        var files = HttpContext.Request.Form.Files;
+        string fileFilderPath = _env.WebRootPath;
+
         if (productViewModel.Product.Id == 0)
         {
-            var files = HttpContext.Request.Form.Files;
-            string fileFilderPath = _env.WebRootPath;
+            string uploadPath = fileFilderPath + WC.ImagePath;
+            string fileName = Guid.NewGuid().ToString();
+            string extension = Path.GetExtension(files[0].FileName);
 
-            if (productViewModel.Product.Id == 0)
+            using (var fileStream = new FileStream(Path.Combine(uploadPath, fileName + extension), FileMode.Create))
             {
-                string uploadPath = fileFilderPath + WC.ImagePath;
-                string fileName = Guid.NewGuid().ToString();
-                string extension = Path.GetExtension(files[0].FileName);
+                files[0].CopyTo(fileStream);
+            }
 
-                using (var fileStream = new FileStream(Path.Combine(uploadPath, fileName + extension), FileMode.Create))
-                {
-                    files[0].CopyTo(fileStream);
-                }
-                
-                productViewModel.Product.ImageUrl = fileName + extension;
-                _db.Products.Add(productViewModel.Product);
-                await _db.SaveChangesAsync();
-            }
-            else
-            {
-                //Updating
-            }
-            return RedirectToAction("Index");    
+            productViewModel.Product.ImageUrl = fileName + extension;
+            _db.Products.Add(productViewModel.Product);
+            await _db.SaveChangesAsync();
         }
+        else
+        {
+            //Updating
+            var entityToUpdate = await _db.Products.FindAsync(productViewModel.Product.Id);
+            if (entityToUpdate != null)
+            {
+                if (files.Count > 0)
+                {
+                    string uploadPath = fileFilderPath + WC.ImagePath;
+                    string fileName = Guid.NewGuid().ToString();
+                    string extension = Path.GetExtension(files[0].FileName);
 
-        return View(productViewModel);
+                    var oldFile = Path.Combine(uploadPath, entityToUpdate.ImageUrl);
+                    if (System.IO.File.Exists(oldFile))
+                    {
+                        System.IO.File.Delete(oldFile);
+                    }
+
+                    using (var fileStream = new FileStream(Path.Combine(uploadPath, fileName + extension), FileMode.Create))
+                    {
+                        files[0].CopyTo(fileStream);
+                    }
+
+                    productViewModel.Product.ImageUrl = fileName + extension;
+                }
+                productViewModel.Product.ImageUrl = entityToUpdate.ImageUrl;
+                _db.Entry(entityToUpdate).CurrentValues.SetValues(productViewModel.Product);
+                await _db.SaveChangesAsync();   
+            }
+        }
+        return RedirectToAction("Index");
     }
 }
