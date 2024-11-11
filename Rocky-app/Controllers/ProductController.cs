@@ -121,4 +121,38 @@ public class ProductController : Controller
         }
         return RedirectToAction("Index");
     }
+
+    public async Task<IActionResult> Delete(int? id)
+    {
+        if (id == null || id <= 0) return NotFound();
+        
+        var product = await _db.Products.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        if (product != null) return View(product);
+        
+        return NotFound();
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteProduct(int? id)
+    {
+        if (id == null) return BadRequest();
+        
+        var productToDelete = await _db.Products.FindAsync(id);
+        if (productToDelete == null) return NotFound();
+            
+        string fileFolderPath = _env.WebRootPath;
+        string uploadPath = fileFolderPath + WC.ImagePath;
+        var oldFile = Path.Combine(uploadPath, productToDelete.ImageUrl);
+        
+        if (System.IO.File.Exists(oldFile))
+        {
+            System.IO.File.Delete(oldFile);
+        }
+            
+        _db.Products.Remove(productToDelete);
+        await _db.SaveChangesAsync();
+
+        return RedirectToAction("Index");
+    }
 }
