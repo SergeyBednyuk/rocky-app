@@ -6,7 +6,7 @@
     <div class="card bg-white rounded shadow-sm w-100 h-100" style="border:1px solid #222">
         <div class="card-body px-3 pt-3 pb-1 row">
             <div class="col-7"><label class="float-left">@Model.Name</label></div>
-            <div class="col-5"><label class="float-right"><span class="text-info h5">@Model.Price</span> / sqft</label> </div>
+            <div class="col-5"><label class="float-right"><span class="text-info h5">@($"{Model.Price:C}")</span> / sqft</label> </div>
         </div>
         <img class="card-img-top img-fluid d-block mx-auto mb-3" src="@WC.ImagePath@Model.ImageUrl" alt="Card image cap">
         <div class="card-body p-1 px-3 row">
@@ -27,7 +27,7 @@
                 }*@
             </div>
             <div class="col-12 p-1">
-                <a class="btn btn-dark form-control btn-sm p-2" style="height:40px">View Details</a>
+                <a class="btn btn-dark form-control btn-sm p-2" asp-controller="Home" asp-action="ViewDetails" asp-route-id="@Model.Id" style="height:40px">View Details</a>
             </div>
         </div>
     </div>

@@ -11,7 +11,7 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly AppDbContext _context;
-    
+
     public HomeController(ILogger<HomeController> logger, AppDbContext context)
     {
         _logger = logger;
@@ -24,11 +24,23 @@ public class HomeController : Controller
         {
             Categories = await _context.Categories.ToListAsync(),
             Products = await _context.Products
-                                     .Include(x => x.Category)
-                                     .Include(x => x.ApplicationType)
-                                     .ToListAsync()
+                .Include(x => x.Category)
+                .Include(x => x.ApplicationType)
+                .ToListAsync()
         };
         return View(homeViewModel);
+    }
+
+    public async Task<IActionResult> ViewDetails(int id)
+    {
+        DetailsViewModel detailsViewModel = new()
+        {
+            Product = await _context.Products.Include(x => x.ApplicationType)
+                                             .Include(x => x.Category)
+                                             .FirstOrDefaultAsync(x => x.Id == id)
+        };
+
+        return View(detailsViewModel);
     }
 
     public IActionResult Privacy()
