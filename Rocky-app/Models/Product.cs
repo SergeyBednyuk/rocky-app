@@ -10,8 +10,11 @@ public class Product
 
     [Required]
     public string Name { get; set; } = string.Empty;
-
+    
     public string Description { get; set; } = string.Empty;
+
+    [MaxLength(30)]
+    public string ShortDesc { get; set; } = string.Empty;
 
     [Required]
     [Range(0.01, int.MaxValue, ErrorMessage = "Price is required and must be greater than 0.01")]

@@ -1,21 +1,34 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Rocky_app.Data;
 using Rocky_app.Models;
+using Rocky_app.Models.ViewModels;
 
 namespace Rocky_app.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    private readonly AppDbContext _context;
+    
+    public HomeController(ILogger<HomeController> logger, AppDbContext context)
     {
         _logger = logger;
+        _context = context;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        var homeViewModel = new HomeViewModel()
+        {
+            Categories = await _context.Categories.ToListAsync(),
+            Products = await _context.Products
+                                     .Include(x => x.Category)
+                                     .Include(x => x.ApplicationType)
+                                     .ToListAsync()
+        };
+        return View(homeViewModel);
     }
 
     public IActionResult Privacy()
