@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Microsoft.AspNetCore.Http
 @using Rocky_app.Utils
-@using Rocky_app.Utils.Extentions
+@using Rocky_app.Utils.Extensions
 @inject IHttpContextAccessor HttpContextAccessor  
 
 <!DOCTYPE html>
@@ -50,16 +50,16 @@
 
                         </ul>
                     </li>
-                    <li>
-                        @*<img src="Images/cart.svg" class="w-100 h-100" alt="Cart"/>*@
-                        <i class="bi bi-cart"></i>
+                    <li class="d-flex flex-row">
+                        <img src="Images/cart.svg" class="p-2" alt="Cart"/>
+                        @* <i class="bi bi-cart"></i> *@
                         @if (HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart) != null)
                         {
-                            <a asp-action="Index" asp-controller="Cart" class="nav-link ">
+                            <a asp-action="Index" asp-controller="Cart" class="nav-link p-2">
                                 @{
                                     var count = HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart).Count;
                                 }
-                                <i class="bi bi-cart"></i> &nbsp; (@count)
+                                <i class="bi bi-cart"></i> &nbsp; (@count)      
                             </a>
                         }
                         else

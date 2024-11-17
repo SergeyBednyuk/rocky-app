@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Rocky_app.Utils.Extentions;
+namespace Rocky_app.Utils.Extensions;
 
 public static class SessionExtensions
 {
