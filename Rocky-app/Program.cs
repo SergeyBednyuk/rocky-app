@@ -16,7 +16,9 @@ public class Program
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
         
-        builder.Services.AddDefaultIdentity<IdentityUser>()
+        builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+            .AddDefaultTokenProviders()
+            .AddDefaultUI()
             .AddEntityFrameworkStores<AppDbContext>();
         
         builder.Services.AddHttpContextAccessor();
@@ -45,13 +47,10 @@ public class Program
         app.UseAuthorization();
         
         app.UseSession();
+        app.UseEndpoints(endpoints => endpoints.MapRazorPages());
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
-        /*app.UseEndpoints(endpoints =>
-        {
-            
-        });*/
         app.Run();
     }
 }

@@ -27,6 +27,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <partial name="_LoginPartial" />
                 <ul class="navbar-nav flex-grow-1">
 
                     <li class="nav-item">
@@ -47,11 +48,13 @@
                                 <a class="dropdown-item text-dark" asp-controller="Product" asp-action="Index">Products</a>
                             </li>
                             <div class="dropdown-divider"></div>
-
+                            <li>
+                                @* <a class="dropdown-item text-dark" asp-area="Identity" asp-page="/Account/Register">Create Admin User</a> *@
+                            </li>
                         </ul>
                     </li>
                     <li class="d-flex flex-row">
-                        <img src="Images/cart.svg" class="p-2" alt="Cart"/>
+                        <img src="~/Images/cart.svg" class="p-2" alt="Cart"/>
                         @* <i class="bi bi-cart"></i> *@
                         @if (HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart) != null)
                         {
@@ -59,7 +62,7 @@
                                 @{
                                     var count = HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart).Count;
                                 }
-                                <i class="bi bi-cart"></i> &nbsp; (@count)      
+                                <i class="bi bi-cart"></i> &nbsp; (@count)
                             </a>
                         }
                         else
